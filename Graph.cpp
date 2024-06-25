@@ -1,4 +1,6 @@
 #include "Graph.hpp"
+#include <iostream>
+#include <vector>
 
 namespace ariel
 {
@@ -18,28 +20,27 @@ int Graph::getSize(){
 }
 
 void Graph::loadGraph(vector<vector<int>> m){
-	if (m.size() == m[0].size()) {
-		this->size = m.size();
-		this->m = m;
-	}
+	if (m.size() != m[0].size()) perror("Invalid graph: The graph is not a square matrix.");
+	this->size = m.size();
+	this->m = m;
 }
 
 string Graph::printGraph(){
 	string s = "";
 	for (int i = 0; i < this->size; i++){
-		s += i + "connected to: ";
+		s += "[";
 		for (int j = 0; j < this->size; j++){
-			if (i == j) continue;
-			s += j + " ";
+			s += to_string(this->m[i][j]) + (j != this->size - 1 ? ", " : "");
 		}
-		s += "\n";
+		s += "]\n";
 	}
+	cout << s << endl;
 	return s;
 }
 
 Graph operator + (const Graph& obj1, const Graph& obj2){
 	if (obj1.size != obj2.size) perror("must be of same size");
-	vector<vector<int>> m(obj1.size, vector(obj1.size, 0));
+	vector<vector<int>> m(obj1.size, vector<int>(obj1.size, 0));
 
 	for (int i = 0; i < m.size(); i++)
 		for (int j = 0; j < m.size(); j++)
@@ -52,7 +53,7 @@ Graph operator + (const Graph& obj1, const Graph& obj2){
 
 Graph operator - (const Graph& obj1, const Graph& obj2){
 	if (obj1.size != obj2.size) perror("must be of same size");
-	vector<vector<int>> m(obj1.size, vector(obj1.size, 0));
+	vector<vector<int>> m(obj1.size, vector<int>(obj1.size, 0));
 
 	for (int i = 0; i < m.size(); i++)
 		for (int j = 0; j < m.size(); j++)
@@ -68,7 +69,7 @@ Graph operator - (const Graph& obj1, const Graph& obj2){
 Graph operator += (Graph& obj1, const Graph& obj2){
 	if (obj1.size != obj2.size) perror("must be of same size");
 
-	vector<vector<int>> m(obj1.size, vector(obj1.size, 0));
+	vector<vector<int>> m(obj1.size, vector<int>(obj1.size, 0));
 
 	for (int i = 0; i < m.size(); i++)
 		for (int j = 0; j < m.size(); j++)
@@ -81,7 +82,7 @@ Graph operator += (Graph& obj1, const Graph& obj2){
 Graph operator -= (Graph& obj1, const Graph& obj2){
 	if (obj1.size != obj2.size) perror("must be of same size");
 
-	vector<vector<int>> m(obj1.size, vector(obj1.size, 0));
+	vector<vector<int>> m(obj1.size, vector<int>(obj1.size, 0));
 
 	for (int i = 0; i < m.size(); i++)
 		for (int j = 0; j < m.size(); j++)
@@ -184,7 +185,7 @@ bool operator >= (const Graph& obj1, const Graph& obj2){
 }
 
 Graph Graph::operator * (int num){
-	vector<vector<int>> m(this->size, vector(this->size, 0));
+	vector<vector<int>> m(this->size, vector<int>(this->size, 0));
 
 	for (int i = 0; i < m.size(); i++)
 		for (int j = 0; j < m.size(); j++)
@@ -194,13 +195,47 @@ Graph Graph::operator * (int num){
 	g.loadGraph(m);
 	return g;
 }
+
+Graph Graph::operator *= (int num){
+	vector<vector<int>> m(this->size, vector<int>(this->size, 0));
+
+	for (int i = 0; i < m.size(); i++)
+		for (int j = 0; j < m.size(); j++)
+			m[i][j] = this->m[i][j] * num;
+
+	this->loadGraph(m);
+	return *this;
+}
+Graph Graph::operator / (int num){
+	vector<vector<int>> m(this->size, vector<int>(this->size, 0));
+
+    for (int i = 0; i < m.size(); i++)
+        for (int j = 0; j < m.size(); j++)
+            m[i][j] = this->m[i][j] / num;
+
+    Graph g;
+    g.loadGraph(m);
+    return g;
+}
+Graph Graph::operator /= (int num){
+	vector<vector<int>> m(this->size, vector<int>(this->size, 0));
+
+    for (int i = 0; i < m.size(); i++)
+        for (int j = 0; j < m.size(); j++)
+            m[i][j] = this->m[i][j] / num;
+
+    this->loadGraph(m);
+    return *this;
+}
+
 Graph operator * (const Graph& obj1, const Graph& obj2){
-	vector<vector<int>> m(obj1.size, vector(obj1.size, 0));
+	if (obj1.size != obj2.size) perror("must be of same size");
+	vector<vector<int>> m(obj1.size, vector<int>(obj1.size, 0));
 
 	for (int i = 0; i < m.size(); i++)
 		for (int j = 0; j < m.size(); j++)
 			for (int k = 0; k < m.size(); k++)
-				m[i][j] += obj1.m[i][k] * obj1.m[k][j];
+				m[i][j] += obj1.m[i][k] * obj2.m[k][j];
 
 	Graph g;
 	g.loadGraph(m);

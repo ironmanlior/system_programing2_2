@@ -8,7 +8,7 @@ using namespace std;
 
 namespace ariel
 {
-class Graph {
+	class Graph {
 	private:
 		int size;
 		vector<vector<int>> m;
@@ -38,14 +38,24 @@ class Graph {
 		friend bool operator >= (const Graph& obj1, const Graph& obj2);
 
 		Graph operator * (int num);
+		Graph operator *= (int num);
+		Graph operator / (int num);
+		Graph operator /= (int num);
 		friend Graph operator * (const Graph& obj1, const Graph& obj2);
 
-		ostream& operator << (ostream& s)
+		friend ostream& operator << (ostream &out, const Graph &c)
 		{
-			s << this->printGraph();
-			return s;
+			for (int i = 0; i < c.size; i++){
+				out << "[";
+				for (int j = 0; j < c.size; j++){
+					out <<c.m[i][j] << (j != c.size - 1 ? ", " : "");
+				}
+				out << "]" << endl;
+			}
+			out << endl;
+			return out;
 		}
-};
+	};
 }
 
 #endif
